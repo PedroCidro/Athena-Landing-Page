@@ -36,7 +36,7 @@ const projects = [
 export default function Home() {
   const [activeProject, setActiveProject] = useState(0);
 
-  const whatsappNumber = "5511999999999"; // Replace with your number
+  const whatsappNumber = "5516996100908"; // Replace with your number
   const whatsappMessage = encodeURIComponent("Olá! Vi o site da Athena Studios e gostaria de saber mais sobre criação de sites.");
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
