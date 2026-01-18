@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 
 const WhatsAppIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
@@ -40,18 +40,63 @@ export default function Home() {
   const whatsappMessage = encodeURIComponent("Olá! Vi o site da Athena Studios e gostaria de saber mais sobre o serviço de criação de sites.");
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
+  // Scroll animation for portfolio section
+  const portfolioRef = useRef<HTMLDivElement>(null);
+  const [portfolioVisible, setPortfolioVisible] = useState(false);
+
+  // Parallax effect for hero background
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setPortfolioVisible(true);
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    if (portfolioRef.current) {
+      observer.observe(portfolioRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      {/* Global Watermark Background with Parallax */}
+      <div
+        className="fixed inset-0 opacity-[0.18] pointer-events-none z-0"
+        style={{
+          backgroundImage: 'url(/background1.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          transform: `translateY(${scrollY * 0.05}px)`
+        }}
+      />
+
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-cream/80 backdrop-blur-md border-b border-gold/10">
-        <div className="max-w-6xl mx-auto px-6 py-2 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-6 py-1 flex items-center justify-between">
           <a href="#" className="flex items-center gap-3 group">
             <img
               src="/logo-icon.png"
               alt="Athena Studios"
-              className="h-14 w-auto transition-transform group-hover:scale-105"
+              className="h-19 w-auto transition-transform group-hover:scale-105"
             />
-            <span className="font-serif text-2xl font-semibold text-charcoal tracking-wide">Athena</span>
+            <span className="font-serif text-3xl font-semibold text-charcoal tracking-wide">Athena</span>
           </a>
           <div className="hidden md:flex items-center gap-8">
             <a href="#portfolio" className="text-sm text-charcoal-light hover:text-charcoal transition-colors">Portfólio</a>
@@ -62,17 +107,18 @@ export default function Home() {
             href={whatsappLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-charcoal text-cream px-5 py-2.5 rounded-full text-sm font-medium hover:bg-charcoal-light transition-colors"
+            className="flex items-center gap-1 text-white px-7 py-3.5 rounded-full text-base font-medium transition-colors"
+            style={{ backgroundColor: '#909a87' }}
           >
-            <WhatsAppIcon className="w-4 h-4" />
+            <WhatsAppIcon className="w-5 h-5" />
             <span className="hidden sm:inline">Conversar</span>
           </a>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center pt-20 px-6 greek-pattern">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="min-h-screen flex items-center justify-center pt-20 px-6 greek-pattern relative overflow-hidden">
+        <div className="max-w-4xl mx-auto text-center relative z-10">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-cream-dark/80 backdrop-blur-sm px-4 py-2 rounded-full mb-8 border border-gold/20">
             <span className="w-2 h-2 bg-gold rounded-full animate-pulse"></span>
@@ -96,7 +142,8 @@ export default function Home() {
               href={whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 bg-charcoal text-cream px-8 py-4 rounded-full text-lg font-medium hover:bg-charcoal-light transition-all hover:scale-105 shadow-lg shadow-charcoal/20"
+              className="flex items-center gap-3 text-white px-8 py-4 rounded-full text-lg font-medium transition-all hover:scale-105 shadow-lg"
+              style={{ backgroundColor: '#909a87' }} //b0d3b3
             >
               <WhatsAppIcon className="w-5 h-5" />
               Solicitar Orçamento
@@ -116,7 +163,18 @@ export default function Home() {
 
       {/* Portfolio Section */}
       <section id="portfolio" className="py-24 px-6 bg-cream-dark">
-        <div className="max-w-6xl mx-auto">
+        <div
+          ref={portfolioRef}
+          className={`max-w-6xl mx-auto rounded-3xl p-10 md:p-14 transition-all duration-700 ease-out ${portfolioVisible
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-16'
+            }`}
+          style={{
+            backgroundColor: 'rgba(217, 181, 150, 0.08)',
+            border: '1px solid rgba(217, 181, 150, 0.2)',
+            backdropFilter: 'blur(8px)'
+          }}
+        >
           <div className="text-center mb-16">
             <p className="text-gold text-sm font-medium tracking-widest uppercase mb-4">Portfólio</p>
             <h2 className="font-serif text-4xl md:text-5xl font-semibold text-charcoal">
@@ -131,7 +189,7 @@ export default function Home() {
                 className="group bg-cream rounded-2xl overflow-hidden border border-gold/10 hover:border-gold/30 transition-all hover:shadow-xl hover:shadow-gold/5"
               >
                 {/* Project Image Placeholder */}
-                <div className={`aspect-video ${project.placeholder} flex items-center justify-center`}>
+                <div className="aspect-video flex items-center justify-center">
                   <span className="text-charcoal-light/50 text-sm">Screenshot do projeto</span>
                 </div>
 
@@ -256,7 +314,8 @@ export default function Home() {
             href={whatsappLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-3 bg-charcoal text-cream px-10 py-5 rounded-full text-xl font-medium hover:bg-charcoal-light transition-all hover:scale-105 shadow-xl shadow-charcoal/20"
+            className="inline-flex items-center gap-3 text-white px-10 py-5 rounded-full text-xl font-medium transition-all hover:scale-105 shadow-xl"
+            style={{ backgroundColor: '#909a87' }}
           >
             <WhatsAppIcon className="w-6 h-6" />
             Falar pelo WhatsApp
