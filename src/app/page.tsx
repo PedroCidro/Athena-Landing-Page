@@ -23,13 +23,6 @@ const projects = [
     description: "Landing page moderna para academia de powerlifting com design impactante.",
     image: "/dominato-barbell-club.png",
     isLongScreenshot: true
-  },
-  {
-    title: "Clínica Vheledos",
-    category: "Saúde & Bem-estar",
-    description: "Site institucional moderno com agendamento online e apresentação dos serviços.",
-    image: "/Vheledos.png",
-    isLongScreenshot: true
   }
 ];
 
@@ -427,14 +420,13 @@ export default function Home() {
       {/* Footer */}
       <footer className="py-8 px-6 border-t border-gold/10">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Image
+          <div className="flex items-center gap-1">
+            <img
               src="/logo-icon.png"
               alt="Athena Studios"
-              width={44}
-              height={44}
+              className="h-16 w-auto"
             />
-            <span className="font-serif text-lg font-semibold text-charcoal">Athena Studios</span>
+            <span className="font-serif text-2xl font-semibold text-charcoal tracking-wide">Athena Studios</span>
           </div>
           <p className="text-charcoal-light text-sm">
             {new Date().getFullYear()} Athena Studios
