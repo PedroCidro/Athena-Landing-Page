@@ -89,7 +89,7 @@ export default function Home() {
     return () => window.removeEventListener('wheel', handleNativeWheel);
   }, [hoveredCard, expandedCards]);
 
-  const whatsappNumber = "5516996100908"; // Replace with your number
+  const whatsappNumber = "16994010466"; // Replace with your number
   const whatsappMessage = encodeURIComponent("Olá! Vi o site da Athena Studios e gostaria de saber mais sobre o serviço de criação de sites.");
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
