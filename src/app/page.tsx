@@ -89,7 +89,7 @@ export default function Home() {
     return () => window.removeEventListener('wheel', handleNativeWheel);
   }, [hoveredCard, expandedCards]);
 
-  const whatsappNumber = "16994010466"; // Replace with your number
+  const whatsappNumber = "5516994010466"; // Replace with your number
   const whatsappMessage = encodeURIComponent("Olá! Vi o site da Athena Studios e gostaria de saber mais sobre o serviço de criação de sites.");
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
@@ -143,13 +143,17 @@ export default function Home() {
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-cream/80 backdrop-blur-md border-b border-gold/10">
         <div className="max-w-6xl mx-auto px-6 py-1 flex items-center justify-between">
-          <a href="#" className="flex items-center gap-3 group">
+          <a href="#" className="flex items-center gap-1 group">
             <img
               src="/logo-icon.png"
               alt="Athena Studios"
               className="h-19 w-auto transition-transform group-hover:scale-105"
             />
-            <span className="font-serif text-3xl font-semibold text-charcoal tracking-wide">Athena</span>
+            <img
+              src="/athena_name.png"
+              alt="Athena"
+              className="h-4 w-auto transition-transform group-hover:scale-110"
+            />
           </a>
           <div className="hidden md:flex items-center gap-8">
             <a href="#portfolio" className="text-sm text-charcoal-light hover:text-charcoal transition-colors">Portfólio</a>
@@ -160,7 +164,7 @@ export default function Home() {
             href={whatsappLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-white px-7 py-3.5 rounded-full text-base font-medium transition-colors"
+            className="flex items-center gap-1 text-white px-7 py-3.5 rounded-full text-base font-medium transition-all duration-200 hover:scale-110"
             style={{ backgroundColor: '#909a87' }}
           >
             <WhatsAppIcon className="w-5 h-5" />
@@ -231,11 +235,11 @@ export default function Home() {
           <div className="text-center mb-16">
             <p className="text-gold text-sm font-medium tracking-widest uppercase mb-4">Portfólio</p>
             <h2 className="font-serif text-4xl md:text-5xl font-semibold text-charcoal">
-              Projetos Recentes
+              Projeto Recente
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 items-start">
+          <div className={`grid gap-8 items-start ${projects.length === 1 ? 'max-w-md mx-auto' : 'md:grid-cols-2'}`}>
             {projects.map((project, index) => {
               const isExpanded = expandedCards.has(index);
               const isHovered = hoveredCard === index;
@@ -418,8 +422,8 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-6 border-t border-gold/10">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <footer className="py-8 px-6 border-t border-gold/10 bg-cream/80 backdrop-blur-md">
+        <div className="max-w-6xl mx-auto flex flex-col items-center justify-center gap-4">
           <div className="flex items-center gap-1">
             <img
               src="/logo-icon.png"
