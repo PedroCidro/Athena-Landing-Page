@@ -61,24 +61,27 @@ const services = [
     title: "Landing Pages",
     description: "Páginas de alta conversão para campanhas e captação de leads.",
     price: "R$ 1.500",
-    priceNote: "+ hospedagem",
-    features: ["Design responsivo", "Otimização SEO", "Integração WhatsApp", "Formulários de contato"]
+    priceNote: "Pagamento único",
+    monthlyPrice: "Mensalidade: R$ 280",
+    features: ["Hospedagem inclusa", "Manutenção técnica", "Design responsivo", "Otimização SEO"]
   },
   {
     icon: InstitutionalIcon,
     title: "Sites Institucionais",
     description: "Presença digital completa para sua empresa ou consultório.",
     price: "A partir de R$ 3.500",
-    priceNote: "valor em consulta",
-    features: ["Múltiplas páginas", "Blog opcional", "Galeria de fotos", "Design exclusivo"]
+    priceNote: "Valor do desenvolvimento",
+    monthlyPrice: "Mensalidade: A partir de R$ 300",
+    features: ["Hospedagem inclusa", "Manutenção técnica", "Múltiplas páginas", "Design exclusivo"]
   },
   {
     icon: StoreIcon,
     title: "Lojas Virtuais",
     description: "E-commerce completo para vender online 24/7.",
-    price: "A partir de R$ 5.000",
-    priceNote: "valor em consulta",
-    features: ["Catálogo de produtos", "Carrinho de compras", "Integração de pagamentos", "Gestão de estoque"]
+    price: "A partir de R$ 3.500",
+    priceNote: "Valor do desenvolvimento",
+    monthlyPrice: "Mensalidade: A partir de R$ 450",
+    features: ["Hospedagem otimizada", "Manutenção prioritária", "Catálogo de produtos", "Integração de pagamentos"]
   }
 ];
 
@@ -291,7 +294,6 @@ export default function Home() {
               <a href="#quem-somos" className="text-sm text-charcoal-light hover:text-charcoal transition-colors">Quem Somos</a>
               <a href="#portfolio" className="text-sm text-charcoal-light hover:text-charcoal transition-colors">Portfólio</a>
               <a href="#servicos" className="text-sm text-charcoal-light hover:text-charcoal transition-colors">Serviços</a>
-              <a href="#preco" className="text-sm text-charcoal-light hover:text-charcoal transition-colors">Investimento</a>
             </div>
             <a
               href={whatsappLink}
@@ -582,7 +584,12 @@ export default function Home() {
 
                   <div className="mb-6">
                     <p className="font-serif text-3xl font-bold text-gold">{service.price}</p>
-                    <p className="text-charcoal-light text-sm">{service.priceNote}</p>
+                    <p className="text-charcoal-light text-xs uppercase tracking-wide mb-2">{service.priceNote}</p>
+                    {/* @ts-ignore */}
+                    <div className="inline-block bg-gold/10 px-3 py-1 rounded-full">
+                      {/* @ts-ignore */}
+                      <p className="text-gold text-sm font-medium">{service.monthlyPrice}</p>
+                    </div>
                   </div>
 
                   <ul className="space-y-3">
@@ -639,56 +646,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Pricing Section */}
-        <section id="preco" className="py-24 px-6 bg-charcoal text-cream">
-          <div className="max-w-5xl mx-auto text-center">
-            <p className="text-gold text-sm font-medium tracking-widest uppercase mb-4">Investimento</p>
-            <h2 className="font-serif text-4xl md:text-5xl font-semibold mb-6">
-              Transparente e flexível
-            </h2>
-            <p className="text-cream/70 text-lg mb-12 max-w-2xl mx-auto">
-              Sem surpresas, sem taxas escondidas. O valor final depende da complexidade do seu projeto.
-            </p>
 
-            <div className="grid md:grid-cols-3 gap-6 mb-12">
-              <div className="bg-cream/5 backdrop-blur-sm rounded-2xl p-8 border border-cream/10">
-                <p className="text-cream/50 text-sm uppercase tracking-wider mb-2">Landing Pages</p>
-                <p className="font-serif text-4xl font-bold text-cream mb-2">R$ 1.500</p>
-                <p className="text-cream/50 text-sm">+ mensalidade</p>
-              </div>
-              <div className="bg-cream/5 backdrop-blur-sm rounded-2xl p-8 border border-cream/10">
-                <p className="text-cream/50 text-sm uppercase tracking-wider mb-2">Sites Institucionais</p>
-                <p className="font-serif text-4xl font-bold text-gold mb-2">A partir de R$ 3.500</p>
-                <p className="text-cream/50 text-sm">valor em consulta</p>
-              </div>
-              <div className="bg-cream/5 backdrop-blur-sm rounded-2xl p-8 border border-cream/10">
-                <p className="text-cream/50 text-sm uppercase tracking-wider mb-2">Lojas Virtuais</p>
-                <p className="font-serif text-4xl font-bold text-cream mb-2">A partir de R$ 5.000</p>
-                <p className="text-cream/50 text-sm">valor em consulta</p>
-              </div>
-            </div>
-
-            <div className="bg-cream/5 backdrop-blur-sm rounded-2xl p-8 border border-cream/10 max-w-2xl mx-auto">
-              <p className="text-cream/50 text-sm uppercase tracking-wider mb-2">Mensalidade (Hospedagem + Manutenção)</p>
-              <p className="font-serif text-4xl font-bold text-gold mb-4">R$ 280 — R$ 450</p>
-              <p className="text-cream/70 text-sm">
-                Inclui: domínio, hospedagem, SSL, atualizações de segurança, backups e pequenas alterações
-              </p>
-            </div>
-
-            <div className="mt-12">
-              <a
-                href={whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 bg-gold text-charcoal px-8 py-4 rounded-full text-lg font-semibold hover:bg-gold-light transition-all hover:scale-105"
-              >
-                <WhatsAppIcon className="w-5 h-5" />
-                Solicitar Orçamento Personalizado
-              </a>
-            </div>
-          </div>
-        </section>
 
         {/* FAQ Section */}
         <section className="py-24 px-6">
