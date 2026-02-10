@@ -222,10 +222,12 @@ export default function Home() {
   const aboutRef = useRef<HTMLDivElement>(null);
   const processRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLDivElement>(null);
+  const faqRef = useRef<HTMLDivElement>(null);
   const [portfolioVisible, setPortfolioVisible] = useState(false);
   const [aboutVisible, setAboutVisible] = useState(false);
   const [processVisible, setProcessVisible] = useState(false);
   const [servicesVisible, setServicesVisible] = useState(false);
+  const [faqVisible, setFaqVisible] = useState(false);
 
   // Parallax effect for hero background
   const [scrollY, setScrollY] = useState(0);
@@ -257,6 +259,7 @@ export default function Home() {
             if (entry.target === aboutRef.current) setAboutVisible(true);
             if (entry.target === processRef.current) setProcessVisible(true);
             if (entry.target === servicesRef.current) setServicesVisible(true);
+            if (entry.target === faqRef.current) setFaqVisible(true);
           }
         });
       },
@@ -267,6 +270,7 @@ export default function Home() {
     if (aboutRef.current) observer.observe(aboutRef.current);
     if (processRef.current) observer.observe(processRef.current);
     if (servicesRef.current) observer.observe(servicesRef.current);
+    if (faqRef.current) observer.observe(faqRef.current);
 
     return () => observer.disconnect();
   }, []);
@@ -301,8 +305,8 @@ export default function Home() {
               <Image
                 src="/athena_name.png"
                 alt="Athena"
-                width={56}
-                height={14}
+                width={90}
+                height={22}
                 className="transition-transform group-hover:scale-110"
                 priority
               />
@@ -670,9 +674,9 @@ export default function Home() {
 
 
         {/* FAQ Section */}
-        <section className="py-24 px-6">
+        <section className="py-24 px-6" ref={faqRef}>
           <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-16">
+            <div className={`text-center mb-16 transition-[opacity,transform] duration-700 ease-out ${faqVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
               <p className="text-gold text-sm font-medium tracking-widest uppercase mb-4">Dúvidas Frequentes</p>
               <h2 className="font-serif text-4xl md:text-5xl font-semibold text-charcoal">
                 Perguntas e Respostas
@@ -683,7 +687,8 @@ export default function Home() {
               {faqItems.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-cream-dark rounded-2xl border border-gold/10 overflow-hidden"
+                  className={`bg-cream-dark rounded-2xl border border-gold/10 overflow-hidden transition-[opacity,transform] duration-500 ease-out ${faqVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+                  style={{ transitionDelay: faqVisible ? `${index * 100}ms` : '0ms' }}
                 >
                   <button
                     onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
@@ -691,7 +696,7 @@ export default function Home() {
                   >
                     <span className="font-semibold text-charcoal">{item.question}</span>
                     <svg
-                      className={`w-5 h-5 text-gold transition-transform ${expandedFaq === index ? 'rotate-180' : ''}`}
+                      className={`w-5 h-5 text-gold transition-transform duration-300 ${expandedFaq === index ? 'rotate-180' : ''}`}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -700,11 +705,16 @@ export default function Home() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
-                  {expandedFaq === index && (
-                    <div className="px-6 pb-6">
-                      <p className="text-charcoal-light leading-relaxed">{item.answer}</p>
+                  <div
+                    className="grid transition-[grid-template-rows] duration-300 ease-out"
+                    style={{ gridTemplateRows: expandedFaq === index ? '1fr' : '0fr' }}
+                  >
+                    <div className="overflow-hidden">
+                      <div className="px-6 pb-6">
+                        <p className="text-charcoal-light leading-relaxed">{item.answer}</p>
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               ))}
             </div>
