@@ -1,18 +1,28 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createHmac } from "crypto";
 
-function verifyAuthCookie(request: NextRequest): boolean {
+async function verifyAuthCookie(request: NextRequest): Promise<boolean> {
   const cookie = request.cookies.get("dashboard-auth");
   if (!cookie?.value) return false;
 
   const secret = process.env.NEXTAUTH_SECRET || process.env.DASHBOARD_PASSWORD || "";
-  const expected = createHmac("sha256", secret).update("authenticated").digest("hex");
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode("authenticated"));
+  const expected = Array.from(new Uint8Array(signature))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 
   return cookie.value === expected;
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const hostname = request.headers.get("host") || "";
   const pathname = request.nextUrl.pathname;
 
@@ -33,7 +43,7 @@ export function middleware(request: NextRequest) {
 
     // Check auth for the rewritten path too
     if (dashboardPath !== "/dashboard/login") {
-      if (!verifyAuthCookie(request)) {
+      if (!(await verifyAuthCookie(request))) {
         return NextResponse.redirect(new URL("/dashboard/login", request.url));
       }
     }
@@ -49,14 +59,14 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-function handleDashboardAuth(request: NextRequest, pathname: string): NextResponse {
+async function handleDashboardAuth(request: NextRequest, pathname: string): Promise<NextResponse> {
   // Allow login page without auth
   if (pathname === "/dashboard/login") {
     return NextResponse.next();
   }
 
   // Check auth cookie
-  if (!verifyAuthCookie(request)) {
+  if (!(await verifyAuthCookie(request))) {
     return NextResponse.redirect(new URL("/dashboard/login", request.url));
   }
 
