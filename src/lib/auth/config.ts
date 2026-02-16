@@ -1,63 +1,52 @@
-import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
-import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { cookies } from "next/headers";
+import { createHmac, timingSafeEqual } from "crypto";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  pages: {
-    signIn: "/dashboard/login",
-  },
-  session: {
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
-  providers: [
-    Credentials({
-      name: "credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Senha", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+const COOKIE_NAME = "dashboard-auth";
+const COOKIE_MAX_AGE = 30 * 24 * 60 * 60; // 30 days
 
-        const email = credentials.email as string;
-        const password = credentials.password as string;
+function getSecret(): string {
+  const secret = process.env.NEXTAUTH_SECRET || process.env.DASHBOARD_PASSWORD || "";
+  return secret;
+}
 
-        const user = await db.query.users.findFirst({
-          where: eq(users.email, email),
-        });
+function signToken(value: string): string {
+  return createHmac("sha256", getSecret()).update(value).digest("hex");
+}
 
-        if (!user) return null;
+export function verifyPassword(password: string): boolean {
+  const expected = process.env.DASHBOARD_PASSWORD;
+  if (!expected) return false;
+  return password === expected;
+}
 
-        const passwordMatch = await bcrypt.compare(password, user.passwordHash);
-        if (!passwordMatch) return null;
+export async function setAuthCookie(): Promise<void> {
+  const token = signToken("authenticated");
+  const cookieStore = await cookies();
+  cookieStore.set(COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: COOKIE_MAX_AGE,
+  });
+}
 
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        };
-      },
-    }),
-  ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id as string;
-        token.role = (user as { role: string }).role;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
-      }
-      return session;
-    },
-  },
-});
+export async function clearAuthCookie(): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.delete(COOKIE_NAME);
+}
+
+export async function isAuthenticated(): Promise<boolean> {
+  const cookieStore = await cookies();
+  const cookie = cookieStore.get(COOKIE_NAME);
+  if (!cookie?.value) return false;
+
+  const expected = signToken("authenticated");
+  try {
+    const a = Buffer.from(cookie.value, "hex");
+    const b = Buffer.from(expected, "hex");
+    return a.length === b.length && timingSafeEqual(a, b);
+  } catch {
+    return false;
+  }
+}

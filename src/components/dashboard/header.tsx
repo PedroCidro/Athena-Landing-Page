@@ -1,6 +1,5 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -32,6 +31,7 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { logout } from "@/lib/actions/auth";
 
 const navItems = [
   { href: "/dashboard", label: "Painel", icon: LayoutDashboard, exact: true },
@@ -43,17 +43,7 @@ const navItems = [
   { href: "/dashboard/settings", label: "Configurações", icon: Settings },
 ];
 
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
-
 export function DashboardHeader() {
-  const { data: session } = useSession();
   const pathname = usePathname();
 
   return (
@@ -109,12 +99,10 @@ export function DashboardHeader() {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
-              <AvatarFallback className="text-xs">
-                {session?.user?.name ? getInitials(session.user.name) : "?"}
-              </AvatarFallback>
+              <AvatarFallback className="text-xs">AD</AvatarFallback>
             </Avatar>
             <span className="hidden text-sm font-medium md:inline-block">
-              {session?.user?.name ?? "Usuário"}
+              Admin
             </span>
           </Button>
         </DropdownMenuTrigger>
@@ -122,12 +110,12 @@ export function DashboardHeader() {
           <DropdownMenuItem asChild>
             <Link href="/dashboard/settings" className="flex items-center gap-2">
               <User className="h-4 w-4" />
-              Meu Perfil
+              Configurações
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={() => signOut({ callbackUrl: "/dashboard/login" })}
+            onClick={() => logout()}
             className="flex items-center gap-2 text-destructive"
           >
             <LogOut className="h-4 w-4" />

@@ -1,5 +1,16 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { createHmac } from "crypto";
+
+function verifyAuthCookie(request: NextRequest): boolean {
+  const cookie = request.cookies.get("dashboard-auth");
+  if (!cookie?.value) return false;
+
+  const secret = process.env.NEXTAUTH_SECRET || process.env.DASHBOARD_PASSWORD || "";
+  const expected = createHmac("sha256", secret).update("authenticated").digest("hex");
+
+  return cookie.value === expected;
+}
 
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get("host") || "";
@@ -12,22 +23,42 @@ export function middleware(request: NextRequest) {
 
   if (isAppSubdomain) {
     // Rewrite app subdomain requests to /dashboard/*
-    // Skip if already targeting /dashboard or api/auth
-    if (
-      pathname.startsWith("/dashboard") ||
-      pathname.startsWith("/api/auth")
-    ) {
-      return NextResponse.next();
+    // Skip if already targeting /dashboard
+    if (pathname.startsWith("/dashboard")) {
+      return handleDashboardAuth(request, pathname);
     }
 
     // Rewrite / -> /dashboard, /projects -> /dashboard/projects, etc.
     const dashboardPath = pathname === "/" ? "/dashboard" : `/dashboard${pathname}`;
+
+    // Check auth for the rewritten path too
+    if (dashboardPath !== "/dashboard/login") {
+      if (!verifyAuthCookie(request)) {
+        return NextResponse.redirect(new URL("/dashboard/login", request.url));
+      }
+    }
+
     return NextResponse.rewrite(new URL(dashboardPath, request.url));
   }
 
-  // For main domain, block direct access to /dashboard (except for dev)
-  // In production, /dashboard should only be accessed via subdomain
-  // In dev, allow direct access for convenience
+  // For main domain, check dashboard auth
+  if (pathname.startsWith("/dashboard")) {
+    return handleDashboardAuth(request, pathname);
+  }
+
+  return NextResponse.next();
+}
+
+function handleDashboardAuth(request: NextRequest, pathname: string): NextResponse {
+  // Allow login page without auth
+  if (pathname === "/dashboard/login") {
+    return NextResponse.next();
+  }
+
+  // Check auth cookie
+  if (!verifyAuthCookie(request)) {
+    return NextResponse.redirect(new URL("/dashboard/login", request.url));
+  }
 
   return NextResponse.next();
 }
