@@ -14,9 +14,12 @@ export async function requireAuth() {
   const authed = await isAuthenticated();
   if (!authed) redirect("/dashboard/login");
 
-  const firstUser = await db.query.users.findFirst({
-    columns: { id: true, name: true, email: true, role: true },
-  });
-
-  return firstUser ?? DEFAULT_USER;
+  try {
+    const firstUser = await db.query.users.findFirst({
+      columns: { id: true, name: true, email: true, role: true },
+    });
+    return firstUser ?? DEFAULT_USER;
+  } catch {
+    return DEFAULT_USER;
+  }
 }
