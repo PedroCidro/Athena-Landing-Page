@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function DashboardError({
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
@@ -21,6 +22,12 @@ export default function DashboardError({
           <p className="text-sm text-muted-foreground text-center">
             Ocorreu um erro ao carregar esta página. Tente novamente.
           </p>
+          {error?.message && (
+            <pre className="w-full overflow-auto rounded bg-muted p-3 text-xs text-left">
+              {error.message}
+              {error.digest && `\nDigest: ${error.digest}`}
+            </pre>
+          )}
           <Button onClick={reset}>Tentar novamente</Button>
         </CardContent>
       </Card>
